@@ -2,10 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\Log\Log;
 use App\Exception\CustomException;
+use Cake\Log\Log;
 use Cake\Utility\Security;
-use Cake\I18n\Time;
 
 /**
  * UrlHashing Controller
@@ -24,53 +23,51 @@ class UrlHashingController extends AppController
     {
         if ($this->request->is('post')) {
             $originalUrlDetails = $this->request->data;
-            $id = $this->UrlHashing->find()->select(['id'])->last();
-            if (!isset($id)) {
-                $id = 0;
-            }
+
+            //no imput is given
             if (empty($originalUrlDetails['original_url'])) {
                 $this->Flash->error(__('Invalid Data. Please, try again.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $hashedURL = md5($originalUrlDetails['original_url'] . $id);
-            $encodedURL = substr(base64_encode($hashedURL), 0, 8);  
 
-            $urlDetail = $this->UrlHashing->newEntity();    
+            //if expiration date is set for the url
+            if (!isset($originalUrlDetails['expiration_date'])) {
+                $originalUrlDetails['expiration_date'] = null;
+            }
 
-            $urlData = [
-                'hash' => $encodedURL,
-                'original_url' => $originalUrlDetails['original_url'],
-            ];  
+            $hashedKey = $this->UrlHashing->generateKey($originalUrlDetails['original_url']);   
+            $result = $this->UrlHashing->saveHashedUrl($originalUrlDetails['original_url'], $hashedKey, $originalUrlDetails['expiration_date']);
 
-            if (isset($originalUrlDetails['expiration_date'])) {
-                $urlData['expiration_date'] = $originalUrlDetails['expiration_date'];
-            }   
+            if (!$result) {
+                $this->Flash->error(__("Data couldn't be saved. Please try again"));
 
-            $urlDetail = $this->UrlHashing->patchEntity($urlDetail, $urlData);
-
-            if (!$this->UrlHashing->save($urlDetail)) {
-                $this->Flash->error(__('The url detail could not be saved. Please, try again.'));
+                return null;
             }
             
-            $this->Flash->success(__('Shortened URL: ' . SERVER_DOMAIN . 'shortenedUrl/' . $encodedURL));
-            return $this->redirect(['action' => 'view', $encodedURL]);
-            //$urlDetail = $this->UrlHashing->newEntity();
+            $this->Flash->success(__('Shortened URL: ' . SERVER_DOMAIN . 'shortenedUrl/' . $hashedKey));
+
+            return $this->redirect(['action' => 'view', $hashedKey]);
         }
-        $this->set(compact('urlDetail'));
     }
 
     /**
      * View method
      *
-     * @param string|null $id Url Hashing id.
-     * @return \Cake\Http\Response|null
+     * @param string|null $hash Url Hashed Key.
+     * @return null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($hash)
     {
+        //fetch record based on the hash value
         $urlHashing = $this->UrlHashing->find()
             ->where(['hash' => $hash])
             ->first();
+
+        if (!isset($urlHashing)) {
+            $this->Flash->error(__('Url not found'));
+            return $this->redirect(['action' => 'index']);
+        }
 
         $this->set('urlHashing', $urlHashing);
         $this->set(compact('urlHashing'));
@@ -90,19 +87,14 @@ class UrlHashingController extends AppController
             ->first();
 
         if (!isset($urlHashingDetails)) {
+
             return null;
         }
-        if (isset($urlHashingDetails['expiration_date']) && !empty($urlHashingDetails['expiration_date'])) {
-            $currentDate = date_format(Time::now(),DATE_W3C);
-            $expirationDate = date_format($urlHashingDetails['expiration_date'],DATE_W3C);
-            if ($currentDate > $expirationDate) {
-                if ($this->UrlHashing->deleteExpiredLink($urlHashingDetails)) {
-                    $this->Flash->success(__('The url has been deleted.'));
-                } else {
-                    $this->Flash->error(__('The url has not been deleted. Please try again.'));
-                }
-                return null;
-            }
+
+        $isExpired = $this->UrlHashing->isExpiredUrl($urlHashingDetails);
+        if ($isExpired) {
+            $this->Flash->success(__('The expired url has been deleted.'));
+            return null;
         }
         
         return $this->redirect($urlHashingDetails['original_url']);

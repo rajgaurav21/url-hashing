@@ -12,7 +12,7 @@ class CreateUrlHashingTable extends AbstractMigration
      */
     public function change()
     {
-        //creating users table
+        //creating url hashing table
         $table = $this->table('url_hashing');
         $table->addColumn('hash', 'string', [
             'default' => null,

@@ -13,4 +13,11 @@
             <?= __("Error: The link has expired and has been deleted.") ?>
             </h5>
     </div>
+    <div>
+        <?= $this->Html->link(
+            __('Shorten more links'),
+            ['action' => 'index'],
+            ['role' => 'button', 'class' => 'btn btn-primary btn-xs']
+        )?>
+    </div>
 </div>
