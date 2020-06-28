@@ -43,7 +43,6 @@ class UrlHashingController extends AppController
 
                 return null;
             }
-            
             $this->Flash->success(__('Shortened URL: ' . SERVER_DOMAIN . 'shortenedUrl/' . $hashedKey));
 
             return $this->redirect(['action' => 'view', $hashedKey]);
@@ -59,7 +58,7 @@ class UrlHashingController extends AppController
      */
     public function view($hash)
     {
-        //fetch record based on the hash value
+        //fetch record based on the hash key
         $urlHashing = $this->UrlHashing->find()
             ->where(['hash' => $hash])
             ->first();
