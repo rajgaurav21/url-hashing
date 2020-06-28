@@ -13,7 +13,7 @@ Read and edit `config/app.php` and setup the `'Datasources'` and any other
 configuration relevant for your application.
 
 
-##Description
+## Description
 The unique hash of the given URL will be computed using MD5 algorithm, which will give us 
 128 bit hash value. Then this hash is encoded using base64 encoding which will give us a string.
 We choose the first 8 bit of the encoded hash as the key of the shortened URL. 
