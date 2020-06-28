@@ -17,7 +17,15 @@
         <legend><?= __('Add Url Detail') ?></legend>
         <?php
             echo $this->Form->control('original_url');
-            echo $this->Form->control('expiration_date');
+            echo $this->Form->input(
+                'expiration_date',
+                 [
+                  'label' => __('Expiration Date'),
+                  'type'=>'text',
+                  'id' => 'datetimepicker',
+                  'default' => date('Y-m-d H:i') #Set time for today
+                 ]
+            );
         ?>
     </fieldset>
     <div class="text-center">

@@ -2,6 +2,7 @@
 namespace App\Model\Table;
 
 use Cake\I18n\Time;
+use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;

@@ -23,7 +23,7 @@ class UrlHashingController extends AppController
     {
         if ($this->request->is('post')) {
             $originalUrlDetails = $this->request->data;
-
+            log::debug($this->request->data);
             //no imput is given
             if (empty($originalUrlDetails['original_url'])) {
                 $this->Flash->error(__('Invalid Data. Please, try again.'));
