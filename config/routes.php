@@ -80,6 +80,11 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'urlDetails', 'action' => 'shortenedUrl', '_method' => 'GET']
     );
 
+    $routes->connect(
+        '/urlDetails/*',
+        ['controller' => 'urlDetails', 'action' => 'view', '_method' => 'GET']
+    );
+
     /**
      * Connect catchall routes for all controllers.
      *

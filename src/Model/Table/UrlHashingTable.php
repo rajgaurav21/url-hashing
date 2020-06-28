@@ -68,4 +68,17 @@ class UrlHashingTable extends Table
 
         return $validator;
     }
+
+    /**
+     * delete the link after its expiration
+     *
+     * @param $urlHashingDetails urlHashing entity.
+     * @return bool
+     */
+    public function deleteExpiredLink($urlHashingDetails) {
+        if ($this->delete($urlHashingDetails)) {
+            return true;
+        }
+        return false;
+    }
 }
