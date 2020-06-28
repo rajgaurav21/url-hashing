@@ -69,6 +69,17 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
+    $routes->connect(
+        '/urlDetails',
+        ['controller' => 'urlDetails', 'action' => 'index', '_method' => ['POST']],
+        ['controller' => 'urlDetails', 'action' => 'add', '_method' => ['POST']]
+    );
+
+    $routes->connect(
+        '/urlDetails/*',
+        ['controller' => 'urlDetails', 'action' => 'shortenedUrl', '_method' => 'GET']
+    );
+
     /**
      * Connect catchall routes for all controllers.
      *

@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateUrlDetailsTable extends AbstractMigration
+class CreateUrlHashingTable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -13,7 +13,7 @@ class CreateUrlDetailsTable extends AbstractMigration
     public function change()
     {
         //creating users table
-        $table = $this->table('url_details');
+        $table = $this->table('url_hashing');
         $table->addColumn('hash', 'string', [
             'default' => null,
             'limit' => 255,
